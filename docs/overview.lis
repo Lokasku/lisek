@@ -1,12 +1,12 @@
-let foo 2
+let foo (9)
 let baz (+ 2 (- 4 2))
 
-put foo
+format (foo)
 
 cond (= foo baz) {
-    put "hello, world"
+    format ("hello, world")
 } {
-    put "dlrow ,olleh"
+    format ("dlrow ,olleh")
 }
 
 until (< foo baz) {
