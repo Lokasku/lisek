@@ -1,0 +1,18 @@
+let foo 2
+let baz (+ 2 (- 4 2))
+
+put foo
+
+cond (= foo baz) {
+    put "hello, world"
+} {
+    put "dlrow ,olleh"
+}
+
+until (< foo baz) {
+    | comment ..
+}
+
+fun add (x y) {
+    (+ x y)
+}
