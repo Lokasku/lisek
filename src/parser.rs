@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 use std::collections::HashMap;
+use std::fmt::{Debug, Formatter, Result};
 use crate::eval::Evaluator;
 use crate::decl::*;
 
@@ -14,6 +15,21 @@ pub enum TType {
     Builtin(fn(&mut Evaluator, usize, usize))
 }
 
+impl std::fmt::Debug for TType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TType::Integer(i) => write!(f, "Integer({})", i),
+            TType::Float(fl) => write!(f, "Float({})", fl),
+            TType::String(s) => write!(f, "String({:?})", s),
+            TType::SParen(t) => write!(f, "SParen({:?})", t),
+            TType::SBrac(t) => write!(f, "SBrac({:?})", t),
+            TType::Ident(i) => write!(f, "Ident({})", i),
+            TType::Builtin(_) => write!(f, "Builtin<function>")
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct Token {
     pub ttype: TType,
     pub line: usize,
@@ -94,6 +110,7 @@ impl Parser {
     }
 
     pub fn advance(&mut self) -> char {
+        println!("ENTER IN ADVANCE!");
         self.current += 1;
         match self.peek(0) {
             '\n' => {
@@ -158,16 +175,27 @@ impl Parser {
                 None => {}
             }
         }
+        println!("   -> {:?}", content);
+        self.current += 1;
         content
     }
 
     pub fn unit_parse(&mut self) -> Option<Token> {
         let cc = self.advance();
+        
         println!("> unit_parse(): {}", cc);
+
         if self.current != 1 {self.start = self.current};
 
+        println!("{} - {}", self.current, self.input.chars().count() - 1);
+
         match cc {
-            '\n' | '\r' | ' ' | ')' => None,
+            '\n' | '\r' | ' ' | ')' | '}' => None,
+            '|' => {
+                while self.peek(0) != '\n' {self.advance();}
+                self.line += 1;
+                None
+            }
             '"' => Some(Token::new(self.string(), self.line, self.column)),
             '(' => Some(Token::new(TType::SParen(self.stuck(')')), self.line, self.column)),
             '{' => Some(Token::new(TType::SBrac(self.stuck('}')), self.line, self.column)),

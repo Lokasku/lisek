@@ -25,17 +25,21 @@ impl Parser {
         println!(" >>> declaration()");
 
         self.skip_blanks();
-        while self.peek(0) != ' ' {self.advance();}
+        while self.peek(0) != ' ' {
+            self.advance();
+        }
         let name = self.input[self.start..self.current].to_string();
         println!("   -> {:?}", name);
         self.skip_blanks();
-        self.current -= 1;
+        if self.peek(0) != '(' {panic!("The value of a function must be surrounded by parentheses.")}
+        self.current -= 1; // allows `unit_parse` to enter the `stuck` cycle
+
         println!("After let name: {}", self.peek(0));
 
         let token = self.unit_parse().unwrap();
         match token.ttype {
             TType::SParen(_) | TType::Integer(_) | TType::Float(_) | TType::String(_) | TType::Builtin(_) => {},
-            _ => panic!("Expected SParen, identifier, decimal, float or string, find ({}:{}).", self.line, self.column)
+            t => panic!("Expected SParen, identifier, decimal, float or string, find `{:?}` ({}:{}).", t, self.line, self.column)
         }
 
         if self.symbols.contains(&name) {
