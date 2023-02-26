@@ -1,10 +1,11 @@
 #![allow(unused)]
 
 use std::collections::HashMap;
-use std::fmt::{Debug, Formatter, Result};
+use std::fmt::{self, Debug, Formatter, Result};
 use crate::eval::Evaluator;
 use crate::decl::*;
 
+#[derive(Clone)]
 pub enum TType {
     Integer(i32),
     Float(f32),
@@ -15,7 +16,7 @@ pub enum TType {
     Builtin(fn(&mut Evaluator, usize, usize))
 }
 
-impl std::fmt::Debug for TType {
+impl Debug for TType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             TType::Integer(i) => write!(f, "Integer({})", i),
@@ -29,7 +30,7 @@ impl std::fmt::Debug for TType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     pub ttype: TType,
     pub line: usize,
@@ -53,11 +54,16 @@ pub struct Parser {
     pub column: usize,
     pub current: usize,
     pub start: usize,
-
     pub symbols: Vec<String>,
     pub values: Vec<Token>,
-
     pub builtins: HashMap<String, fn(&mut Evaluator, usize, usize)>
+}
+
+impl Debug for Parser {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Parser {{ input: {:#?}, output: {:#?}, line: {}, column: {}, current: {}, start: {}, symbols: {:#?}, values: {:#?}, builtins: ... }}",
+               self.input, self.output, self.line, self.column, self.current, self.start, self.symbols, self.values)
+    }
 }
 
 impl Parser {
@@ -110,9 +116,8 @@ impl Parser {
     }
 
     pub fn advance(&mut self) -> char {
-        println!("ENTER IN ADVANCE!");
         self.current += 1;
-        match self.peek(0) {
+        match self.input.chars().nth(self.current - 1).unwrap() {
             '\n' => {
                 self.line += 1;
                 self.column = 1;
@@ -126,8 +131,6 @@ impl Parser {
     }
 
     pub fn skip_blanks(&mut self) {
-        println!(">> skip_blanks()");
-
         while self.peek(0) == ' ' {
             self.advance();
         }
@@ -135,20 +138,17 @@ impl Parser {
     }
 
     pub fn string(&mut self) -> TType {
-        println!(">> number()");
         self.advance();
         self.start = self.current;
         while self.peek(0) != '"' {
             self.advance();
         }
         let string = self.input[self.start..self.current].to_string();
-        println!("   -> {:?}", string);
 
         TType::String(string)
     }
 
     pub fn number(&mut self) -> TType {
-        println!(">> number()");
         if self.peek(0) == '-' {
             self.advance();
         }
@@ -158,7 +158,6 @@ impl Parser {
         }
 
         let num = self.input[self.start..self.current].to_string();
-        println!("   -> {:?}", num);
 
         match num.parse::<i32>() {
             Ok(n) => TType::Integer(n),
@@ -167,27 +166,20 @@ impl Parser {
     }
 
     pub fn stuck(&mut self, delimiter: char) -> Vec<Token> {
-        println!(">> stuck()");
         let mut content = vec![];
-        while self.peek(0) != ')' {
+        while self.peek(0) != delimiter {
             match self.unit_parse() {
                 Some(x) => content.push(x),
                 None => {}
             }
         }
-        println!("   -> {:?}", content);
-        self.current += 1;
+        // self.current += 1;
         content
     }
 
     pub fn unit_parse(&mut self) -> Option<Token> {
         let cc = self.advance();
-        
-        println!("> unit_parse(): {}", cc);
-
         if self.current != 1 {self.start = self.current};
-
-        println!("{} - {}", self.current, self.input.chars().count() - 1);
 
         match cc {
             '\n' | '\r' | ' ' | ')' | '}' => None,
@@ -209,7 +201,6 @@ impl Parser {
 
     pub fn parse(&mut self) {
         while !self.is_eof() {
-            println!("PARSE()");
             match self.unit_parse() {
                 Some(tok) => self.output.push(tok),
                 None => {}

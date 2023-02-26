@@ -2,11 +2,9 @@ use crate::parser::{Parser, Token, TType};
 
 impl Parser {
     pub fn identifiers(&mut self) -> Option<Token> {
-        println!(">> identifiers()");
         let stop = vec![' ', ')', '(', ']', '[', '{', '}', '\n', '\r'];
         while !stop.contains(&self.peek(0)) {self.advance();}
         let ident = self.input[self.start..self.current].to_string();
-        println!("   -> {:?}", ident);
 
         match ident.as_str() {
             "let" => self.declaration(),
@@ -22,19 +20,15 @@ impl Parser {
         }
     }
     pub fn declaration(&mut self) -> Option<Token> {
-        println!(" >>> declaration()");
-
         self.skip_blanks();
+
         while self.peek(0) != ' ' {
             self.advance();
         }
         let name = self.input[self.start..self.current].to_string();
-        println!("   -> {:?}", name);
         self.skip_blanks();
-        if self.peek(0) != '(' {panic!("The value of a function must be surrounded by parentheses.")}
+        if self.peek(0) != '(' { panic!("The value of a function must be surrounded by parentheses.") }
         self.current -= 1; // allows `unit_parse` to enter the `stuck` cycle
-
-        println!("After let name: {}", self.peek(0));
 
         let token = self.unit_parse().unwrap();
         match token.ttype {

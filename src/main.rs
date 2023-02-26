@@ -16,4 +16,5 @@ fn main() {
     let content = fs::read_to_string(args[1].clone()).expect("Cannot read file for some reasons.");
     let mut parser = Parser::new(content);
     parser.parse();
+    dbg!("{:#?}", parser.output);
 }

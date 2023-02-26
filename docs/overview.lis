@@ -5,6 +5,7 @@ format (foo)
 
 cond (= foo baz) {
     format ("hello, world")
+    format (9)
 } {
     format ("dlrow ,olleh")
 }
