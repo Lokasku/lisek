@@ -1,6 +1,7 @@
 mod parser;
-mod decl;
+mod declare;
 mod eval;
+mod formatter;
 mod builtins;
 mod arithmetic;
 mod bool;

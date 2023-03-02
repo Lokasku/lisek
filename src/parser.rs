@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 use std::fmt::{self, Debug, Formatter, Result};
 use crate::eval::Evaluator;
-use crate::decl::*;
+use crate::declare::*;
 
 #[derive(Clone)]
 pub enum TType {
@@ -13,7 +13,8 @@ pub enum TType {
     SParen(Vec<Token>), // ()
     SBrac(Vec<Token>),  // {}
     Ident(usize),
-    Builtin(fn(&mut Evaluator, usize, usize))
+    Builtin(fn(&mut Evaluator, usize, usize)),
+    Expr(Vec<Token>)
 }
 
 impl Debug for TType {
@@ -25,7 +26,8 @@ impl Debug for TType {
             TType::SParen(t) => write!(f, "SParen({:?})", t),
             TType::SBrac(t) => write!(f, "SBrac({:?})", t),
             TType::Ident(i) => write!(f, "Ident({})", i),
-            TType::Builtin(_) => write!(f, "Builtin<function>")
+            TType::Builtin(_) => write!(f, "Builtin<function>"),
+            TType::Expr(_) => write!(f, "Expr<..>")
         }
     }
 }
@@ -85,17 +87,16 @@ impl Parser {
         parser.add_builtin("*", Evaluator::mul);
         parser.add_builtin("/", Evaluator::div);
         parser.add_builtin("%", Evaluator::mdl);
-        parser.add_builtin("^", Evaluator::mdl);
+        parser.add_builtin("^", Evaluator::exp);
 
         parser.add_builtin("<", Evaluator::low);
         parser.add_builtin(">", Evaluator::sup);
         parser.add_builtin("=", Evaluator::eq);
         parser.add_builtin("!=", Evaluator::uneq);
 
-        parser.add_builtin("format", Evaluator::cond);
-        parser.add_builtin("conc", Evaluator::fun);
+        parser.add_builtin("format", Evaluator::format);
+        parser.add_builtin("conc", Evaluator::conc);
         parser.add_builtin("cond", Evaluator::cond);
-        parser.add_builtin("fun", Evaluator::fun);
         parser.add_builtin("until", Evaluator::until) ;
         parser
     }

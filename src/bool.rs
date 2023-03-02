@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use crate::eval::Evaluator;
 
 impl Evaluator {

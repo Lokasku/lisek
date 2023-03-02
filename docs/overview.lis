@@ -1,15 +1,8 @@
 let foo (9)
 let baz (+ 2 (- 4 2))
 
-format (foo)
-
 cond (= foo baz) {
-    format ("hello, world")
-    format (9)
+    format ("Yes.")
 } {
-    format ("dlrow ,olleh")
-}
-
-until (< foo baz) {
-    | comment ..
+    format ("No.")
 }
