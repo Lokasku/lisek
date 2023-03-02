@@ -13,7 +13,7 @@ pub enum TType {
     SParen(Vec<Token>), // ()
     SBrac(Vec<Token>),  // {}
     Ident(usize),
-    Builtin(fn(&mut Evaluator, usize, usize)),
+    Builtin(usize),
     Expr(Vec<Token>)
 }
 
@@ -26,8 +26,8 @@ impl Debug for TType {
             TType::SParen(t) => write!(f, "SParen({:?})", t),
             TType::SBrac(t) => write!(f, "SBrac({:?})", t),
             TType::Ident(i) => write!(f, "Ident({})", i),
-            TType::Builtin(_) => write!(f, "Builtin<function>"),
-            TType::Expr(_) => write!(f, "Expr<..>")
+            TType::Builtin(i) => write!(f, "Builtin({})", i),
+            TType::Expr(v) => write!(f, "Expr({:#?})", v)
         }
     }
 }
@@ -58,13 +58,13 @@ pub struct Parser {
     pub start: usize,
     pub symbols: Vec<String>,
     pub values: Vec<Token>,
-    pub builtins: HashMap<String, fn(&mut Evaluator, usize, usize)>
+    pub builtins: Vec<String>
 }
 
 impl Debug for Parser {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Parser {{ input: {:#?}, output: {:#?}, line: {}, column: {}, current: {}, start: {}, symbols: {:#?}, values: {:#?}, builtins: ... }}",
-               self.input, self.output, self.line, self.column, self.current, self.start, self.symbols, self.values)
+        write!(f, "input: {:#?}, output: {:#?}, line: {}, column: {}, current: {}, start: {}, symbols: {:#?}, values: {:#?}, builtins: {:?}",
+               self.input, self.output, self.line, self.column, self.current, self.start, self.symbols, self.values, self.builtins)
     }
 }
 
@@ -79,30 +79,30 @@ impl Parser {
             start: 0,
             symbols: vec![],
             values: vec![],
-            builtins: HashMap::new()
+            builtins: vec![]
         };
 
-        parser.add_builtin("+", Evaluator::add);
-        parser.add_builtin("-", Evaluator::sub);
-        parser.add_builtin("*", Evaluator::mul);
-        parser.add_builtin("/", Evaluator::div);
-        parser.add_builtin("%", Evaluator::mdl);
-        parser.add_builtin("^", Evaluator::exp);
+        parser.add_builtin("+"); // 0
+        parser.add_builtin("-"); // 1
+        parser.add_builtin("*"); // 2
+        parser.add_builtin("/"); // 3
+        parser.add_builtin("%"); // 4
+        parser.add_builtin("^"); // 5
 
-        parser.add_builtin("<", Evaluator::low);
-        parser.add_builtin(">", Evaluator::sup);
-        parser.add_builtin("=", Evaluator::eq);
-        parser.add_builtin("!=", Evaluator::uneq);
+        parser.add_builtin("<"); // 6
+        parser.add_builtin(">"); // 7
+        parser.add_builtin("="); // 8
+        parser.add_builtin("!="); // 9
 
-        parser.add_builtin("format", Evaluator::format);
-        parser.add_builtin("conc", Evaluator::conc);
-        parser.add_builtin("cond", Evaluator::cond);
-        parser.add_builtin("until", Evaluator::until) ;
+        parser.add_builtin("format"); // 10
+        parser.add_builtin("conc"); // 11
+        parser.add_builtin("cond"); // 12
+        parser.add_builtin("until"); // 13
         parser
     }
 
-    fn add_builtin(&mut self, name: &str, func: fn(&mut Evaluator, usize, usize)) {
-        self.builtins.insert(name.to_string(), func);
+    fn add_builtin(&mut self, name: &str) {
+        self.builtins.push(name.to_string());
     }
 
     pub fn is_eof(&self) -> bool {

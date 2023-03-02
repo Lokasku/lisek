@@ -8,8 +8,8 @@ impl Parser {
 
         match ident.as_str() {
             "let" => self.declaration(),
-            x if self.builtins.contains_key(x) => Some(Token::new(
-                TType::Builtin(*self.builtins.get(x).unwrap()),
+            x if self.builtins.contains(&x.to_owned()) => Some(Token::new(
+                TType::Builtin(self.builtins.iter().position(|i| i == x).unwrap() as usize),
                 self.line,
                 self.column)),
             x if self.symbols.contains(&x.to_owned()) => Some(Token::new(
