@@ -174,7 +174,7 @@ impl Parser {
                 None => {}
             }
         }
-        // self.current += 1;
+        self.current += 1;
         content
     }
 

@@ -7,5 +7,9 @@ cond (= foo baz) {
     format "No."
 }
 until (< 1 2) {
-    format "Tom Bombadil"
+    cond (> foo baz) {
+        format "Cat"
+    } {
+        format "hi"
+    }
 }
