@@ -27,7 +27,7 @@ impl Parser {
         }
         let name = self.input[self.start..self.current].to_string();
         self.skip_blanks();
-        if self.peek(0) != '(' { panic!("The value of a function must be surrounded by parentheses.") }
+        // if self.peek(0) != '(' { panic!("The value of a function must be surrounded by parentheses.") }
         self.current -= 1; // allows `unit_parse` to enter the `stuck` cycle
 
         let token = self.unit_parse().unwrap();

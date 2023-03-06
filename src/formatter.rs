@@ -3,9 +3,7 @@ use crate::parser::{Token, TType};
 pub struct Formatter {}
 
 impl Formatter {
-    pub fn new() -> Self { Self {} }
-
-    pub fn unit_format(&mut self, tokens: Vec<Token>, start_to: usize) -> (Token, usize)  {
+    pub fn unit_format(tokens: Vec<Token>, start_to: usize) -> (Token, usize)  {
         let token = tokens[start_to].clone();
         match token {
             Token {ttype: TType::Builtin(func), line, column} => {
@@ -18,7 +16,7 @@ impl Formatter {
                 let mut res: Vec<Token> = vec![token];
                 let mut position = start_to + 1;
                 for _ in 0..arity {
-                    let r = self.unit_format(tokens.clone(), position);
+                    let r = Self::unit_format(tokens.clone(), position);
                     res.push(r.0);
                     position += 1; 
                 }
@@ -27,12 +25,12 @@ impl Formatter {
             }
             Token {ttype: TType::SParen(v), line, column} => {
                 let mut result: Vec<Token> = vec![];
-                self.formatter(v, &mut result, 0, 0);
+                Self::formatter(v, &mut result, 0, 0);
                 (Token::new(TType::SParen(result.clone()), line, column), 0)
             }
             Token {ttype: TType::SBrac(v), line, column} => {
                 let mut result: Vec<Token> = vec![];
-                self.formatter(v, &mut result, 0, 0);
+                Self::formatter(v, &mut result, 0, 0);
                 (Token::new(TType::SBrac(result), line, column), 0)
             }
             t => (t, 0)
@@ -40,15 +38,15 @@ impl Formatter {
 
     }
 
-    pub fn formatter(&mut self, tokens: Vec<Token>, result: &mut Vec<Token>, start_to: usize, mut pos: usize) {
-        let r = self.unit_format(tokens.clone(), start_to);
+    pub fn formatter(tokens: Vec<Token>, result: &mut Vec<Token>, start_to: usize, mut pos: usize) {
+        let r = Self::unit_format(tokens.clone(), start_to);
         match r {
             (Token {ttype: TType::Expr(v), line, column}, n) => {
-                result.push(Token::new(TType::Expr(v), line, column));
+                result.push(Token::new(TType::Expr(v.into_iter().rev().collect()), line, column));
                 pos += n;
                 if pos >= tokens.len() - 1 {}
                 else {
-                    self.formatter(tokens, result, pos, pos);
+                    Self::formatter(tokens, result, pos, pos);
                 }
             }
             _ => panic!("Every instruction must start with a Builtin, or an assignment.")

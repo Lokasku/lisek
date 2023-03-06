@@ -14,6 +14,7 @@ pub enum TType {
     SBrac(Vec<Token>),  // {}
     Ident(usize),
     Builtin(usize),
+    Bool(bool),
     Expr(Vec<Token>)
 }
 
@@ -27,6 +28,7 @@ impl Debug for TType {
             TType::SBrac(t) => write!(f, "SBrac({:?})", t),
             TType::Ident(i) => write!(f, "Ident({})", i),
             TType::Builtin(i) => write!(f, "Builtin({})", i),
+            TType::Bool(b) => write!(f, "Bool({})", b),
             TType::Expr(v) => write!(f, "Expr({:#?})", v)
         }
     }

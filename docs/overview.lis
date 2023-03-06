@@ -1,15 +1,8 @@
-let foo (9)
-let baz (+ 2 (- 4 2))
+let foo 9
+let baz (+ 4 (- 2 1))
 
-cond (= foo baz) {
-    format "Yes."
+cond (= baz (- foo 4)) {
+    format "TRUE"
 } {
-    format "No."
-}
-until (< 1 2) {
-    cond (> foo baz) {
-        format "Cat"
-    } {
-        format "hi"
-    }
+    format "FALSE"
 }
