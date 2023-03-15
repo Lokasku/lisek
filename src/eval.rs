@@ -34,7 +34,7 @@ impl Evaluator {
                 Evaluator::add, Evaluator::sub, Evaluator::mul, Evaluator::div,
                 Evaluator::mdl, Evaluator::exp, Evaluator::low, Evaluator::sup,
                 Evaluator::eq, Evaluator::uneq, Evaluator::format, Evaluator::conc,
-                Evaluator::cond, Evaluator::until
+                Evaluator::cond, Evaluator::looop
             ]
         }
     }

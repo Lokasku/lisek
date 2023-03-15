@@ -6,3 +6,7 @@ cond (= baz (- foo 4)) {
 } {
     format "FALSE"
 }
+
+loop {
+    format "Egg."
+}

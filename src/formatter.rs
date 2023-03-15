@@ -8,8 +8,8 @@ impl Formatter {
         match token {
             Token {ttype: TType::Builtin(func), line, column} => {
                 let arity = match func {
-                    0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 11 | 13 => 2,
-                    10 => 1,
+                    0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 11 => 2,
+                    10 | 13 => 1,
                     12 => 3,
                     _ => 0 // will never happen
                 }; 

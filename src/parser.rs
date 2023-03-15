@@ -99,7 +99,7 @@ impl Parser {
         parser.add_builtin("format"); // 10
         parser.add_builtin("conc"); // 11
         parser.add_builtin("cond"); // 12
-        parser.add_builtin("until"); // 13
+        parser.add_builtin("loop"); // 13
         parser
     }
 

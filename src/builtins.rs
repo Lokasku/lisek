@@ -38,5 +38,13 @@ impl Evaluator {
         }
     }
 
-    pub fn until(&mut self, line: usize, column: usize) {}
+    pub fn looop(&mut self, line: usize, column: usize) {
+        if let TType::SBrac(v) = self.pop() {
+            loop {
+                self.eval(v.clone());
+            }
+        } else {
+            panic!("Expected SBrac, find something else ({}:{}).", line, column);
+        }
+    }
 }
